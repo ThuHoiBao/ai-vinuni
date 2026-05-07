@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="AI VinUni Prep Studio - web học lý thuyết ML/DL, toán định lượng, Python/pandas và luyện trắc nghiệm đầu vào AI thực chiến."
+    />
+    <title>AI VinUni Prep Studio</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Điều hướng học tập">
+        <a class="brand" href="#dashboard" aria-label="AI VinUni Prep Studio">
+          <span class="brand-mark">AI</span>
+            <span>
+              <strong>VinUni Prep</strong>
+            <small>AI thực chiến khóa 3</small>
+            </span>
+        </a>
+
+        <nav class="side-nav">
+          <button class="nav-item active" data-view="dashboard" type="button">
+            <span class="nav-icon">01</span> Tổng quan
+          </button>
+          <button class="nav-item" data-view="theory" type="button">
+            <span class="nav-icon">02</span> Lý thuyết
+          </button>
+          <button class="nav-item" data-view="quiz" type="button">
+            <span class="nav-icon">03</span> Trắc nghiệm
+          </button>
+          <button class="nav-item" data-view="mock" type="button">
+            <span class="nav-icon">04</span> Bộ đề full
+          </button>
+          <button class="nav-item" data-view="lab" type="button">
+            <span class="nav-icon">05</span> Code lab
+          </button>
+          <button class="nav-item" data-view="cases" type="button">
+            <span class="nav-icon">06</span> Tự luận
+          </button>
+          <button class="nav-item" data-view="cheatsheet" type="button">
+            <span class="nav-icon">07</span> Cheat sheet
+          </button>
+          <button class="nav-item" data-view="resources" type="button">
+            <span class="nav-icon">08</span> Video & nguồn
+          </button>
+        </nav>
+
+        <section class="exam-card" aria-label="Thông tin bài thi">
+          <p class="eyebrow">Bám đề công khai</p>
+          <h2>4 module, 90 phút</h2>
+          <p>
+            Toán định lượng, lập trình và dữ liệu, kiến thức AI, logic/đạo đức
+            và xử lý tình huống.
+          </p>
+          <a href="#sources" class="mini-link">Nguồn tham khảo</a>
+        </section>
+      </aside>
+
+      <main class="main">
+        <header class="topbar">
+          <button id="menuToggle" class="icon-button mobile-only" type="button" aria-label="Mở menu">
+            <span></span><span></span><span></span>
+          </button>
+          <div class="search-box">
+            <label class="sr-only" for="globalSearch">Tìm bài học</label>
+            <input id="globalSearch" type="search" placeholder="Tìm Bayes, PCA, pandas, F1..." />
+          </div>
+          <div class="top-actions">
+            <button id="resetProgress" class="ghost-button" type="button">Reset tiến độ</button>
+            <button id="themeToggle" class="icon-button" type="button" aria-label="Đổi giao diện sáng tối">
+              <span class="sun"></span>
+            </button>
+          </div>
+        </header>
+
+        <section id="dashboard" class="view active-view">
+          <div class="dashboard-grid">
+            <section class="hero-panel">
+              <div class="hero-copy">
+                <p class="eyebrow">AI VinUni Prep Studio</p>
+                <h1>Luyện thi đầu vào khóa 3 AI thực chiến như một buổi lab thật.</h1>
+                <p>
+                  Một web tĩnh nhưng đủ lực: roadmap 4 module, lý thuyết ML/DL,
+                  bài tập toán định lượng, quiz chấm điểm, code lab pandas/Python
+                  và câu tự luận tình huống. Không hứa đậu 100%, nhưng tối ưu
+                  để bạn ôn đúng trọng tâm và biết sửa lỗi.
+                </p>
+                <div class="hero-actions">
+                  <button class="primary-button" data-view-jump="theory" type="button">Bắt đầu học</button>
+                  <button class="secondary-button" data-view-jump="quiz" type="button">Làm đề nhanh</button>
+                </div>
+              </div>
+              <div class="hero-visual" aria-label="Mạng neural minh họa">
+                <canvas id="networkCanvas" width="560" height="380"></canvas>
+                <div class="signal-chip chip-a">Input</div>
+                <div class="signal-chip chip-b">Hidden</div>
+                <div class="signal-chip chip-c">Output</div>
+              </div>
+            </section>
+
+            <section class="stats-strip" aria-label="Tiến độ học">
+              <div>
+                <span id="progressPercent">0%</span>
+                <p>tiến độ</p>
+              </div>
+              <div>
+                <span id="lessonCount">0</span>
+                <p>bài học</p>
+              </div>
+              <div>
+                <span id="quizCount">0</span>
+                <p>câu quiz</p>
+              </div>
+              <div>
+                <span id="labCount">0</span>
+                <p>code lab</p>
+              </div>
+            </section>
+
+            <section class="module-map" id="moduleMap"></section>
+
+            <section class="exam-blueprint" id="examBlueprint"></section>
+
+            <section class="study-plan">
+              <div class="section-heading">
+                <p class="eyebrow">Kế hoạch 7 ngày</p>
+                <h2>Ôn gấp nhưng vẫn có hệ thống</h2>
+              </div>
+              <div id="studyPlanList" class="timeline"></div>
+            </section>
+          </div>
+        </section>
+
+        <section id="theory" class="view">
+          <div class="section-heading wide">
+            <p class="eyebrow">Theory deck</p>
+            <h2>Chương trình học đầy đủ theo module</h2>
+            <p>
+              Mỗi bài có ý chính, công thức, bẫy hay gặp, ví dụ và điểm cần nhớ
+              khi gặp câu trắc nghiệm hoặc bài đọc code.
+            </p>
+          </div>
+          <div class="filters" id="moduleFilters"></div>
+          <div class="content-layout">
+            <aside class="lesson-index" id="lessonIndex"></aside>
+            <div class="lesson-list" id="lessonList"></div>
+          </div>
+        </section>
+
+        <section id="quiz" class="view">
+          <div class="quiz-shell">
+            <section class="quiz-panel">
+              <div class="section-heading">
+                <p class="eyebrow">Mock test</p>
+                <h2>Trắc nghiệm chấm điểm ngay</h2>
+                <p>
+                  Chọn module, độ khó, số câu. Sau mỗi câu có giải thích để sửa
+                  lỗi tư duy, không chỉ biết đúng sai.
+                </p>
+              </div>
+
+              <div class="quiz-controls">
+                <label>
+                  Module
+                  <select id="quizModule">
+                    <option value="all">Tất cả</option>
+                  </select>
+                </label>
+                <label>
+                  Độ khó
+                  <select id="quizDifficulty">
+                    <option value="all">Tất cả</option>
+                    <option value="easy">Dễ</option>
+                    <option value="medium">Trung bình</option>
+                    <option value="hard">Khó</option>
+                  </select>
+                </label>
+                <label>
+                  Số câu
+                  <select id="quizSize">
+                    <option value="10">10</option>
+                    <option value="15">15</option>
+                    <option value="20">20</option>
+                    <option value="all">Toàn bộ</option>
+                  </select>
+                </label>
+                <button id="startQuiz" class="primary-button" type="button">Tạo đề</button>
+                <button id="startExam" class="secondary-button" type="button">Đề mô phỏng 90 phút</button>
+              </div>
+            </section>
+
+            <section id="quizStage" class="quiz-stage"></section>
+            <aside id="quizReview" class="quiz-review"></aside>
+          </div>
+        </section>
+
+        <section id="mock" class="view">
+          <div class="section-heading wide">
+            <p class="eyebrow">Full mock exams</p>
+            <h2>Bộ đề hoàn chỉnh theo cấu trúc AI-TEST tham khảo</h2>
+            <p>
+              Mỗi đề có 60 câu, 90 phút, chia A/B/C/D: Toán định lượng, Python/NumPy/pandas,
+              AI/product AI, logic/đạo đức. Có trắc nghiệm, code tay/pseudo-code và tự luận tự chấm.
+            </p>
+          </div>
+          <div class="mock-disclaimer">
+            Đây là bộ đề luyện tập mới được tạo theo cấu trúc tham khảo từ 2 trang AI-TEST bạn gửi,
+            không phải đề chính thức của VinUni và không sao chép nguyên văn câu hỏi từ nguồn khác.
+          </div>
+          <div id="mockGrid" class="mock-grid"></div>
+        </section>
+
+        <section id="exam" class="view exam-view">
+          <div id="examWorkspace"></div>
+        </section>
+
+        <section id="lab" class="view">
+          <div class="section-heading wide">
+            <p class="eyebrow">Python practice</p>
+            <h2>Code lab pandas, NumPy, scikit-learn và PyTorch</h2>
+            <p>
+              Trình duyệt không chạy Python thật, nên lab dùng bộ kiểm tra pattern
+              để xem lời giải có đúng hướng không. Bạn vẫn luyện được cú pháp,
+              pipeline và đọc output như bài thi.
+            </p>
+          </div>
+          <div id="labGrid" class="lab-grid"></div>
+        </section>
+
+        <section id="cases" class="view">
+          <div class="section-heading wide">
+            <p class="eyebrow">Short answer</p>
+            <h2>Tự luận ngắn và tình huống sản phẩm AI</h2>
+            <p>
+              Dạng câu này thường kiểm tra cách bạn nghĩ: phát hiện rủi ro, chia
+              việc, chọn metric, giải thích tradeoff và viết kế hoạch khả thi.
+            </p>
+          </div>
+          <div id="caseGrid" class="case-grid"></div>
+        </section>
+
+        <section id="cheatsheet" class="view">
+          <div class="section-heading wide">
+            <p class="eyebrow">Last-minute review</p>
+            <h2>Cheat sheet trước giờ thi</h2>
+          </div>
+          <div id="cheatSheetGrid" class="cheatsheet-grid"></div>
+          <section id="sources" class="sources">
+            <h2>Nguồn tham khảo</h2>
+            <p>
+              App này tổng hợp từ outline bạn đưa, ảnh review bài thi, trang AI-TEST
+              bạn gửi để tham khảo cách tổ chức ôn tập, và thông tin công khai mới
+              nhất từ VinUni về chương trình AI thực chiến.
+            </p>
+            <ul>
+              <li>
+                <a href="https://vinuni.edu.vn/vi/thong-tin-tuyen-sinh-chuong-trinh-dao-tao-nhan-tai-ai-thuc-chien-khoa-co-ban/" target="_blank" rel="noreferrer">
+                  VinUni - Thông tin tuyển sinh khóa cơ bản
+                </a>
+              </li>
+              <li>
+                <a href="https://vinuni.edu.vn/vi/chinh-thuc-mo-cong-nhan-ho-so-tuyen-sinh-khoa-2-3-chuong-trinh-dao-tao-20-000-nhan-tai-ai-thuc-chien-cua-tap-doan-vingroup/" target="_blank" rel="noreferrer">
+                  VinUni - Tuyển sinh khóa 2 & 3 năm 2026
+                </a>
+              </li>
+              <li>
+                <a href="https://hungbil.github.io/AI-TEST/" target="_blank" rel="noreferrer">
+                  AI-TEST tham khảo
+                </a>
+              </li>
+              <li>
+                <a href="https://machinelearningcoban.com/2016/12/26/introduce/" target="_blank" rel="noreferrer">
+                  Machine Learning Cơ Bản
+                </a>
+              </li>
+              <li>
+                <a href="https://www.youtube.com/c/MiAIblog" target="_blank" rel="noreferrer">
+                  Mì AI YouTube
+                </a>
+              </li>
+            </ul>
+          </section>
+        </section>
+
+        <section id="resources" class="view">
+          <div class="section-heading wide">
+            <p class="eyebrow">Learning resources</p>
+            <h2>Video tiếng Việt, tài liệu chính thức và nguồn kiểm chứng</h2>
+            <p>
+              Các link này là tài nguyên học thêm theo từng chủ đề. Thông tin
+              tuyển sinh/bài đánh giá ưu tiên nguồn VinUni chính thức; video dùng
+              để học khái niệm và luyện code.
+            </p>
+          </div>
+          <div id="resourceGrid" class="resource-grid"></div>
+        </section>
+      </main>
+    </div>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <noscript>
+      <p class="noscript">Bạn cần bật JavaScript để dùng quiz, lab và tiến độ học.</p>
+    </noscript>
+
+    <script src="ai-test-curated.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
