@@ -120,6 +120,14 @@
               </div>
             </section>
 
+            <section class="dash-module-stats">
+              <div class="section-heading">
+                <p class="eyebrow">Tiến độ theo module</p>
+                <h2>Thống kê chi tiết từng phần</h2>
+              </div>
+              <div class="mod-stats-grid" id="moduleStatsGrid"></div>
+            </section>
+
             <section class="module-map" id="moduleMap"></section>
 
             <section class="exam-blueprint" id="examBlueprint"></section>
@@ -181,9 +189,10 @@
                 <label>
                   Số câu
                   <select id="quizSize">
-                    <option value="10">10</option>
-                    <option value="15">15</option>
-                    <option value="20">20</option>
+                    <option value="10">10 câu</option>
+                    <option value="20">20 câu</option>
+                    <option value="30">30 câu</option>
+                    <option value="60" selected>60 câu</option>
                     <option value="all">Toàn bộ</option>
                   </select>
                 </label>

@@ -2698,10 +2698,11 @@ function applyTheme(theme) {
 }
 
 function renderModuleMap() {
+  const allQ = getAllQuestions();
   $("#moduleMap").innerHTML = modules
     .map((module) => {
       const count = lessons.filter((lesson) => lesson.module === module.id).length;
-      const quizCount = quizzes.filter((quiz) => quiz.module === module.id).length;
+      const quizCount = allQ.filter((quiz) => quiz.module === module.id).length;
       return `
         <article class="module-card">
           <header>
@@ -2715,7 +2716,7 @@ function renderModuleMap() {
             ${module.tags.map((tag) => `<span class="pill">${escapeHtml(tag)}</span>`).join("")}
           </div>
           <button class="secondary-button" data-module-jump="${module.id}" type="button">
-            Học ${count} bài, luyện ${quizCount} câu
+            Học ${count} bài · ${quizCount} câu quiz
           </button>
         </article>
       `;
@@ -2774,13 +2775,47 @@ function renderExamBlueprint() {
 
 function renderStats() {
   const totalTasks = lessons.length + labs.length;
-  const doneTasks =
-    new Set(state.progress.doneLessons).size + new Set(state.progress.doneLabs).size;
+  const doneLessons = new Set(state.progress.doneLessons).size;
+  const doneLabs = new Set(state.progress.doneLabs).size;
+  const doneTasks = doneLessons + doneLabs;
   const percent = totalTasks ? Math.round((doneTasks / totalTasks) * 100) : 0;
+  const allQ = getAllQuestions();
+
+  // top-strip counters
   $("#progressPercent").textContent = `${percent}%`;
   $("#lessonCount").textContent = lessons.length;
-  $("#quizCount").textContent = quizzes.length;
+  $("#quizCount").textContent = allQ.length;
   $("#labCount").textContent = labs.length;
+
+  // per-module stat cards
+  const statsGrid = $("#moduleStatsGrid");
+  if (!statsGrid) return;
+  const doneLessonSet = new Set(state.progress.doneLessons);
+  statsGrid.innerHTML = modules.map((m) => {
+    const mLessons = lessons.filter((l) => l.module === m.id);
+    const mDone = mLessons.filter((l) => doneLessonSet.has(l.id)).length;
+    const mQ = allQ.filter((q) => q.module === m.id).length;
+    const pct = mLessons.length ? Math.round((mDone / mLessons.length) * 100) : 0;
+    const accent = m.accent || "badge-a";
+    return `
+      <article class="mod-stat-card">
+        <div class="mod-stat-header">
+          <span class="module-badge ${accent}">${m.id}</span>
+          <div>
+            <strong>${escapeHtml(m.title)}</strong>
+            <p>${mDone}/${mLessons.length} bài đã học</p>
+          </div>
+        </div>
+        <div class="mod-stat-bar">
+          <div class="mod-stat-fill" style="width:${pct}%"></div>
+        </div>
+        <div class="mod-stat-row">
+          <span class="mod-stat-num">${mQ}</span><span class="mod-stat-label">câu quiz</span>
+          <span class="mod-stat-num">${pct}%</span><span class="mod-stat-label">hoàn thành</span>
+          <button class="tiny-button" data-quiz-for="${m.id}" type="button">Quiz 60 câu</button>
+        </div>
+      </article>`;
+  }).join("");
 }
 
 function renderMockExams() {
@@ -3088,6 +3123,17 @@ function renderLessonExtraContent(lesson) {
   return formulaHtml + examplesHtml;
 }
 
+function getAllQuestions() {
+  // Merge built-in quizzes with all per-lesson quizzes from lesson-quizzes.js
+  const base = [...quizzes];
+  if (window.LESSON_QUIZZES) {
+    const lessonQs = Object.values(window.LESSON_QUIZZES).flat();
+    const baseSet = new Set(base.map((q) => q.q));
+    lessonQs.forEach((q) => { if (!baseSet.has(q.q)) base.push(q); });
+  }
+  return base;
+}
+
 function startQuiz(options = {}) {
   const examMode = Boolean(options.examMode);
   let pool = options.questions || [];
@@ -3095,7 +3141,7 @@ function startQuiz(options = {}) {
     const module = examMode ? "all" : $("#quizModule").value;
     const difficulty = examMode ? "all" : $("#quizDifficulty").value;
     const size = examMode ? "all" : $("#quizSize").value;
-    pool = quizzes.filter((quiz) => {
+    pool = getAllQuestions().filter((quiz) => {
       const moduleOk = module === "all" || quiz.module === module;
       const difficultyOk = difficulty === "all" || quiz.difficulty === difficulty;
       return moduleOk && difficultyOk;
@@ -4387,6 +4433,7 @@ function initEvents() {
 
     if (target.dataset.quizFor) {
       $("#quizModule").value = target.dataset.quizFor;
+      $("#quizSize").value = "60";
       setView("quiz");
       startQuiz();
     }
