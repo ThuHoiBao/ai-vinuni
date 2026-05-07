@@ -2921,6 +2921,7 @@ function renderLessonCard(lesson, index = 0) {
           <p>${escapeHtml(lesson.example)}</p>
         </section>
         ${renderLessonDeepDive(lesson)}
+        ${renderLessonExtraContent(lesson)}
         ${renderLessonResources(lesson)}
         ${
           lesson.code
@@ -2931,11 +2932,14 @@ function renderLessonCard(lesson, index = 0) {
             : ""
         }
         <div class="lesson-actions">
-          <button class="primary-button" data-complete-lesson="${lesson.id}" type="button">
+          <button class="primary-button" data-lesson-quiz="${lesson.id}" type="button">
+            Luyện 20 câu bài này
+          </button>
+          <button class="secondary-button" data-complete-lesson="${lesson.id}" type="button">
             ${done ? "Bỏ đánh dấu" : "Đánh dấu đã học"}
           </button>
           <button class="secondary-button" data-quiz-for="${module.id}" type="button">
-            Luyện quiz Module ${module.id}
+            Quiz Module ${module.id}
           </button>
         </div>
       </div>
@@ -3033,6 +3037,55 @@ function renderLessonResources(lesson) {
       </p>
     </section>
   `;
+}
+
+function startLessonQuiz(lessonId) {
+  const pool = window.LESSON_QUIZZES && window.LESSON_QUIZZES[lessonId];
+  const lesson = lessons.find((l) => l.id === lessonId);
+  if (!pool || !pool.length) {
+    showToast("Quiz riêng cho bài này chưa có. Dùng quiz module.");
+    return;
+  }
+  const title = lesson ? `Quiz: ${lesson.title}` : "Quiz bài học";
+  setView("quiz");
+  startQuiz({ questions: shuffle([...pool]), title, examMode: false });
+}
+
+function renderLessonExtraContent(lesson) {
+  const extra = window.LESSON_EXTRA_THEORY && window.LESSON_EXTRA_THEORY[lesson.id];
+  if (!extra) return "";
+  const formulaHtml = extra.allFormulas
+    ? `<section class="lesson-deep">
+        <article class="deep-card" style="grid-column:1/-1">
+          <h4>📐 Tất cả công thức cần thuộc</h4>
+          <div class="formula-table">
+            ${extra.allFormulas.map((f) => `
+              <div class="formula-row">
+                <strong>${escapeHtml(f.name)}</strong>
+                <code>${escapeHtml(f.formula)}</code>
+                <span class="formula-note">${escapeHtml(f.note)}</span>
+              </div>
+            `).join("")}
+          </div>
+        </article>
+      </section>`
+    : "";
+  const examplesHtml = extra.workedExamples
+    ? `<section class="lesson-deep">
+        <article class="deep-card" style="grid-column:1/-1">
+          <h4>🔢 Ví dụ có số cụ thể (ôn là làm được)</h4>
+          ${extra.workedExamples.map((ex) => `
+            <div class="worked-example">
+              <h5>${escapeHtml(ex.title)}</h5>
+              <p class="example-problem"><strong>Đề:</strong> ${escapeHtml(ex.problem)}</p>
+              <ol>${ex.steps.map((s) => `<li>${escapeHtml(s)}</li>`).join("")}</ol>
+              <p class="example-answer"><strong>Đáp án:</strong> ${escapeHtml(ex.answer)}</p>
+            </div>
+          `).join("")}
+        </article>
+      </section>`
+    : "";
+  return formulaHtml + examplesHtml;
 }
 
 function startQuiz(options = {}) {
@@ -4322,6 +4375,10 @@ function initEvents() {
     if (target.hasAttribute("data-retry-current-exam")) {
       const current = fullMockExams.find((exam) => exam.title === state.quiz.title) || fullMockExams[0];
       startFullMock(current.id);
+    }
+
+    if (target.dataset.lessonQuiz) {
+      startLessonQuiz(target.dataset.lessonQuiz);
     }
 
     if (target.dataset.completeLesson) {

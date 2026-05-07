@@ -1019,6 +1019,89 @@ body.dark .hero-panel {
   margin-top: 14px;
 }
 
+/* ─── Formula table (lesson-quizzes.js extra theory) ─── */
+.formula-table {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.formula-row {
+  display: grid;
+  grid-template-columns: 180px 1fr auto;
+  gap: 12px;
+  align-items: start;
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  background: var(--surface);
+  border: 1px solid var(--line);
+}
+
+.formula-row strong {
+  color: var(--blue);
+  font-size: 0.88rem;
+}
+
+.formula-row code {
+  font-family: 'Fira Mono', monospace;
+  font-size: 0.9rem;
+  color: var(--teal);
+  word-break: break-all;
+}
+
+.formula-note {
+  font-size: 0.78rem;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+/* ─── Worked examples ─── */
+.worked-example {
+  padding: 14px 16px;
+  border-left: 3px solid var(--teal);
+  background: var(--surface);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  margin-top: 14px;
+}
+
+.worked-example h5 {
+  font-size: 0.95rem;
+  color: var(--teal);
+  margin-bottom: 6px;
+}
+
+.example-problem {
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+}
+
+.worked-example ol {
+  padding-left: 20px;
+  font-size: 0.88rem;
+  line-height: 1.7;
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+
+.example-answer {
+  margin-top: 8px;
+  font-size: 0.9rem;
+  padding: 8px 12px;
+  background: rgba(15,159,143,0.1);
+  border-radius: var(--radius);
+  color: var(--teal);
+}
+
+@media (max-width: 768px) {
+  .formula-row {
+    grid-template-columns: 1fr;
+  }
+  .formula-note {
+    white-space: normal;
+  }
+}
+
 .quiz-shell {
   display: grid;
   grid-template-columns: minmax(320px, 0.9fr) minmax(0, 1.1fr) 320px;
