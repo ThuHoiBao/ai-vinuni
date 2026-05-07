@@ -2809,5 +2809,642 @@ window.LESSON_EXTRA_THEORY = {
         answer: "Window function (SQL) hoặc groupby+first (pandas) cho top-1 per group"
       }
     ]
+  },
+
+  // ─── Module C Extra Theory (5 bài đầu) ────────────────────────────────────
+
+  // ══════════════════════════════════════════════════════════
+  // MODULE C — BÀI 1: ML types
+  // ══════════════════════════════════════════════════════════
+  "ml-types": {
+    allFormulas: [
+      { name: "Supervised objective", formula: "minimize L(y_true, f(X; θ))", note: "f học ánh xạ X → y từ nhãn" },
+      { name: "Unsupervised", formula: "find structure in P(X) — không cần y", note: "clustering, PCA, autoencoder" },
+      { name: "RL objective", formula: "maximize E[Σ γᵗ rₜ]", note: "γ là discount factor, r là reward" },
+      { name: "Logistic sigmoid", formula: "p = 1 / (1 + e^(−z))  →  [0,1]", note: "Dù tên 'regression', đây là classifier" },
+      { name: "Linear regression", formula: "y = w·x + b", note: "output liên tục, loss = MSE" },
+      { name: "Phân loại bài toán", formula: "có nhãn liên tục → regression | có nhãn rời rạc → classification | không nhãn → unsupervised", note: "" },
+    ],
+    workedExamples: [
+      {
+        title: "Phân loại 5 bài toán AI",
+        problem: "Phân loại: (1) dự đoán giá nhà, (2) lọc spam, (3) phân nhóm KH, (4) chơi cờ vua, (5) nén ảnh.",
+        steps: [
+          "(1) Giá nhà: supervised regression — nhãn là giá liên tục",
+          "(2) Lọc spam: supervised classification — nhãn là spam/not spam",
+          "(3) Phân nhóm KH: unsupervised clustering — không có nhãn trước",
+          "(4) Chơi cờ vua: reinforcement learning — reward = thắng/thua",
+          "(5) Nén ảnh: unsupervised (autoencoder/PCA) — học biểu diễn compact"
+        ],
+        answer: "regression | classification | clustering | RL | unsupervised representation"
+      },
+      {
+        title: "Tại sao Logistic Regression là classification?",
+        problem: "Giải thích tại sao Logistic Regression dự đoán class dù tên có chữ 'regression'.",
+        steps: [
+          "Bước 1: Tính z = w·x + b (tuyến tính)",
+          "Bước 2: p = sigmoid(z) = 1/(1+e^−z) → xác suất thuộc class 1",
+          "Bước 3: Dự đoán class 1 nếu p >= 0.5, class 0 nếu p < 0.5",
+          "Output là xác suất rời rạc → classification task"
+        ],
+        answer: "Output là xác suất → quyết định class. Tên 'regression' vì fit z tuyến tính."
+      }
+    ]
+  },
+
+  // ══════════════════════════════════════════════════════════
+  // MODULE C — BÀI 2: K-means & PCA
+  // ══════════════════════════════════════════════════════════
+  "kmeans-pca": {
+    allFormulas: [
+      { name: "K-means objective", formula: "minimize Σᵢ Σₓ∈Cᵢ ‖x − μᵢ‖²", note: "Tổng squared distance đến centroid" },
+      { name: "Centroid update", formula: "μᵢ = (1/|Cᵢ|) Σₓ∈Cᵢ x", note: "Trung bình tất cả điểm trong cụm i" },
+      { name: "Inertia (WCSS)", formula: "Σᵢ Σₓ∈Cᵢ ‖x − μᵢ‖²", note: "Dùng elbow method chọn k" },
+      { name: "Silhouette score", formula: "s = (b − a) / max(a, b)  ∈ [−1, 1]", note: "a: khoảng cách nội cụm; b: khoảng cách liên cụm gần nhất" },
+      { name: "PCA variance explained", formula: "ratio = λᵢ / Σλⱼ", note: "λ là eigenvalue, chọn số components đủ 80-90% variance" },
+      { name: "PCA transform", formula: "X_reduced = X @ W_k", note: "W_k: k principal components (eigenvectors)" },
+    ],
+    workedExamples: [
+      {
+        title: "Chọn k bằng Elbow method",
+        problem: "Inertia với k=1,2,3,4,5 là 1000, 400, 180, 160, 155. Chọn k nào?",
+        steps: [
+          "k=1→2: giảm 600 (lớn)",
+          "k=2→3: giảm 220 (lớn)",
+          "k=3→4: giảm 20 (nhỏ đột ngột)",
+          "k=4→5: giảm 5 (rất nhỏ)",
+          "Elbow xuất hiện tại k=3 — điểm mà giảm inertia bắt đầu không đáng kể"
+        ],
+        answer: "Chọn k=3 (elbow tại điểm giảm đột ngột từ k=3 sang k=4)"
+      },
+      {
+        title: "Tại sao cần scale trước K-means?",
+        problem: "Feature: income (0–10,000,000 VND) và age (18–65). Điều gì xảy ra nếu không scale?",
+        steps: [
+          "Khoảng cách Euclidean: d = √((Δincome)² + (Δage)²)",
+          "Δincome có thể = 5,000,000; Δage chỉ = 10",
+          "(5,000,000)² >> (10)² → income gần như hoàn toàn kiểm soát kết quả clustering",
+          "age bị bỏ qua trong phân cụm — kết quả sai",
+          "Sau StandardScaler: cả hai có std=1, đóng góp bình đẳng"
+        ],
+        answer: "StandardScaler trước K-means để mọi feature đóng góp bình đẳng vào khoảng cách"
+      }
+    ]
+  },
+
+  // ══════════════════════════════════════════════════════════
+  // MODULE C — BÀI 3: Model cổ điển
+  // ══════════════════════════════════════════════════════════
+  "classic-models": {
+    allFormulas: [
+      { name: "Linear Regression", formula: "y = w·x + b,  loss = MSE = (1/n)Σ(yᵢ − ŷᵢ)²", note: "Output liên tục" },
+      { name: "Logistic Regression", formula: "p = σ(w·x + b),  loss = Binary Cross Entropy", note: "Output xác suất [0,1]" },
+      { name: "SVM margin", formula: "maximize 2/‖w‖  subject to yᵢ(w·xᵢ+b) ≥ 1", note: "Hard margin. Soft margin thêm slack ξ" },
+      { name: "Gini impurity", formula: "Gini = 1 − Σ pᵢ²", note: "Decision Tree split criterion" },
+      { name: "Random Forest", formula: "prediction = majority_vote(tree₁, ..., treeₙ)", note: "Bagging + feature subsampling" },
+      { name: "L1 Lasso", formula: "loss + λΣ|wⱼ|", note: "Có thể cho w=0 → feature selection" },
+      { name: "L2 Ridge", formula: "loss + λΣwⱼ²", note: "Thu nhỏ weight, không về 0" },
+    ],
+    workedExamples: [
+      {
+        title: "Chọn model cho bài toán tabular nhỏ",
+        problem: "n=500 mẫu, 15 feature số, cần interpretability cao, binary classification. Model nào baseline tốt?",
+        steps: [
+          "Logistic Regression: linear boundary, feature coefficients dễ giải thích, fast",
+          "Decision Tree: interpretable nhưng dễ overfit với n nhỏ",
+          "Random Forest: ổn định hơn nhưng kém interpretable",
+          "Khuyến nghị: Logistic Regression (baseline) + L1/L2 regularization để handle multicollinearity",
+          "Kiểm tra: plot coefficients để thấy feature quan trọng"
+        ],
+        answer: "Logistic Regression với regularization — interpretable và phù hợp n nhỏ"
+      },
+      {
+        title: "Tại sao Random Forest ít overfit hơn Decision Tree đơn?",
+        problem: "Giải thích cơ chế Random Forest giảm variance so với một cây đơn.",
+        steps: [
+          "Decision Tree sâu: học thuộc train, variance cao",
+          "Random Forest: train B cây trên bootstrap samples khác nhau",
+          "Mỗi cây chỉ xem subset ngẫu nhiên của features (feature subsampling)",
+          "Prediction = majority vote → average lỗi ngẫu nhiên → variance giảm",
+          "Bias không tăng nhiều; variance giảm đáng kể → bias-variance tradeoff tốt hơn"
+        ],
+        answer: "Bagging + feature subsampling tạo cây đa dạng; trung bình hóa giảm variance"
+      }
+    ]
+  },
+
+  // ══════════════════════════════════════════════════════════
+  // MODULE C — BÀI 4: ML pipeline, overfit/underfit
+  // ══════════════════════════════════════════════════════════
+  "pipeline-overfit": {
+    allFormulas: [
+      { name: "Bias-variance tradeoff", formula: "Error = Bias² + Variance + Irreducible Noise", note: "Không thể giảm cả hai cùng lúc" },
+      { name: "L2 Regularization (Ridge)", formula: "J = loss + λ‖w‖²", note: "λ lớn → model đơn giản hơn → giảm variance" },
+      { name: "L1 Regularization (Lasso)", formula: "J = loss + λΣ|wⱼ|", note: "Tạo sparse weight → feature selection" },
+      { name: "Dropout", formula: "Mỗi neuron tắt với xác suất p trong training", note: "Không dùng dropout lúc inference" },
+      { name: "Early stopping", formula: "Dừng khi val_loss không giảm sau patience epochs", note: "Tránh train quá nhiều epoch" },
+      { name: "Learning curve", formula: "plot train_loss vs val_loss theo training size / epoch", note: "Gap lớn = overfit; cả hai cao = underfit" },
+    ],
+    workedExamples: [
+      {
+        title: "Đọc learning curve — chẩn đoán overfit/underfit",
+        problem: "Epoch 1-20: train_loss giảm từ 0.9 → 0.1; val_loss giảm từ 0.85 → 0.45 rồi tăng lên 0.60 tại epoch 20. Chẩn đoán?",
+        steps: [
+          "Epoch 1-12: cả hai giảm → model đang học tốt",
+          "Epoch 12-20: train tiếp tục giảm, val_loss tăng → overfitting",
+          "Gap tăng dần giữa train và val là dấu hiệu model học nhiễu",
+          "Giải pháp: early stopping tại epoch 12, thêm dropout, L2 regularization, hoặc tăng dữ liệu"
+        ],
+        answer: "Overfit từ epoch 12. Dừng tại val_loss thấp nhất, thêm regularization."
+      },
+      {
+        title: "Pipeline ML chuẩn đầy đủ",
+        problem: "Liệt kê 8 bước pipeline ML cho bài toán dự đoán churn.",
+        steps: [
+          "1. Thu thập dữ liệu + định nghĩa label churn (ai bị coi là churn?)",
+          "2. EDA: shape, missing, distribution, imbalance, leakage check",
+          "3. Feature engineering: tenure, spend_30d, ticket_rate, …",
+          "4. Split: train/val/test (stratified theo target)",
+          "5. Preprocessing trong pipeline: impute → scale → encode (fit chỉ trên train)",
+          "6. Train + hyperparameter tuning trên val/CV",
+          "7. Evaluate trên test set (một lần duy nhất)",
+          "8. Deploy + monitor: drift detection, retrain trigger"
+        ],
+        answer: "8 bước: collect→EDA→engineer→split→preprocess→train/tune→evaluate→deploy/monitor"
+      }
+    ]
+  },
+
+  // ══════════════════════════════════════════════════════════
+  // MODULE C — BÀI 5: Train/val/test, CV, leakage
+  // ══════════════════════════════════════════════════════════
+  "validation-crossval": {
+    allFormulas: [
+      { name: "K-fold CV score", formula: "score_CV = (1/k) Σᵢ score_fold_i", note: "Ước lượng generalization ổn định hơn 1 split" },
+      { name: "Train/val/test split", formula: "Thường: 60/20/20 hoặc 70/15/15", note: "Test chỉ dùng 1 lần cuối" },
+      { name: "Stratified split", formula: "Giữ nguyên tỉ lệ class trong mỗi fold", note: "Bắt buộc khi class imbalanced" },
+      { name: "Time-series split", formula: "Train: t₁…tₙ | Val: tₙ₊₁…tₙ₊ₖ (forward chaining)", note: "Không shuffle; tương lai không leak vào quá khứ" },
+      { name: "Nested CV", formula: "Outer CV đánh giá | Inner CV tune hyperparameter", note: "Tránh selection bias" },
+      { name: "Leakage types", formula: "Train-test contamination | Target leakage | Temporal leakage", note: "Mọi loại đều gây đánh giá lạc quan" },
+    ],
+    workedExamples: [
+      {
+        title: "Tại sao stratify=y quan trọng với fraud 1%?",
+        problem: "Dataset 10,000 mẫu, 1% là fraud (100 mẫu). Chia 80/20 không stratify.",
+        steps: [
+          "Random split: test có thể chỉ có 15 hoặc 25 fraud (biến động lớn)",
+          "Với 15 fraud trong test: model đoán tất cả là 0 → accuracy 99.85% → misleading",
+          "Với stratify=y: test luôn có đúng 20 fraud (1% của 2000) → đánh giá ổn định",
+          "F1/precision/recall cũng ổn định hơn trên tập test cố định tỉ lệ"
+        ],
+        answer: "stratify=y đảm bảo mỗi split có cùng tỉ lệ class → đánh giá đáng tin cậy hơn"
+      },
+      {
+        title: "Phát hiện leakage trong pipeline",
+        problem: "Pipeline: scale toàn bộ X → split → train model → evaluate. Tìm lỗi.",
+        steps: [
+          "Lỗi: StandardScaler.fit trên toàn bộ X (bao gồm X_test)",
+          "Scaler học mean/std có thông tin từ test → thống kê test rò rỉ vào training",
+          "Model có lợi thế không công bằng → val/test score cao hơn thực tế",
+          "Fix: X_train, X_test = split(X, y); scaler.fit(X_train); X_train=scaler.transform(X_train); X_test=scaler.transform(X_test)"
+        ],
+        answer: "Fit scaler trước split = data leakage. Fix: split trước, fit preprocessing chỉ trên train."
+      }
+    ]
   }
 };
+
+// ─── MODULE C QUIZZES (5 bài đầu × 20 câu) ───────────────────────────────
+Object.assign(window.LESSON_QUIZZES, {
+
+  // ══════════════════════════════════════════════════════════
+  // MODULE C — BÀI 1: ML types
+  // ══════════════════════════════════════════════════════════
+  "ml-types": [
+    { module:"C", difficulty:"easy",
+      q: "Supervised learning khác unsupervised learning ở điểm gì chính?",
+      options:["Supervised học từ dữ liệu có nhãn (X, y); unsupervised chỉ có X","Supervised không cần dữ liệu","Unsupervised nhanh hơn","Supervised chỉ dùng cho ảnh"],
+      answer:0, explanation:"Supervised: có cặp (X, y). Unsupervised: tìm pattern trong X không cần y." },
+    { module:"C", difficulty:"easy",
+      q: "Bài toán nào là supervised classification?",
+      options:["Dự đoán email là spam hay không","Phân nhóm khách hàng thành 3 nhóm","Học chơi game Atari","Nén ảnh bằng autoencoder"],
+      answer:0, explanation:"Spam detection: có nhãn spam/not-spam, output rời rạc → classification." },
+    { module:"C", difficulty:"easy",
+      q: "Bài toán nào là regression?",
+      options:["Dự đoán giá cổ phiếu ngày mai","Phân loại ảnh mèo/chó","Phát hiện anomaly","Phân cụm user"],
+      answer:0, explanation:"Dự đoán giá: output là số liên tục → regression." },
+    { module:"C", difficulty:"easy",
+      q: "Reinforcement learning học qua cơ chế nào?",
+      options:["Reward và penalty qua tương tác với môi trường","Nhãn từ con người","Phân cụm tự động","Giảm reconstruction error"],
+      answer:0, explanation:"RL: agent quan sát state → action → nhận reward → cập nhật policy để maximize cumulative reward." },
+    { module:"C", difficulty:"easy",
+      q: "Logistic Regression là loại model nào?",
+      options:["Classification (dù tên có 'regression')","Regression","Clustering","Reinforcement"],
+      answer:0, explanation:"Output là xác suất qua sigmoid → dùng để classify. Tên gây nhầm lẫn là bẫy thường gặp." },
+    { module:"C", difficulty:"medium",
+      q: "Bài toán phân nhóm khách hàng theo hành vi mua hàng không có nhãn trước thuộc loại nào?",
+      options:["Unsupervised clustering","Supervised classification","Regression","RL"],
+      answer:0, explanation:"Không có nhãn sẵn có → unsupervised. Kết quả là cụm (cluster)." },
+    { module:"C", difficulty:"medium",
+      q: "Metric nào phù hợp nhất cho bài toán supervised regression?",
+      options:["RMSE hoặc MAE","Accuracy","F1 score","Silhouette"],
+      answer:0, explanation:"RMSE/MAE đo lỗi dự đoán cho output liên tục. Accuracy/F1 dùng cho classification." },
+    { module:"C", difficulty:"medium",
+      q: "Điểm chung của K-means, PCA và autoencoder là gì?",
+      options:["Đều là unsupervised — không cần nhãn y","Đều là supervised","Đều dùng gradient descent với cross entropy","Đều cần nhãn rời rạc"],
+      answer:0, explanation:"Cả ba học từ X không có y → unsupervised learning." },
+    { module:"C", difficulty:"medium",
+      q: "Semi-supervised learning là gì?",
+      options:["Học từ ít dữ liệu có nhãn và nhiều dữ liệu không nhãn","Chỉ dùng dữ liệu có nhãn","Chỉ dùng dữ liệu không nhãn","Học qua reward"],
+      answer:0, explanation:"Semi-supervised tận dụng cả labeled và unlabeled data — phổ biến khi nhãn đắt tiền để thu thập." },
+    { module:"C", difficulty:"medium",
+      q: "Bài toán nào phù hợp nhất với Reinforcement Learning?",
+      options:["Tối ưu chiến lược đặt giá động cho khách sạn","Phân loại hình ảnh","Dự đoán doanh thu tháng sau","Phân nhóm sản phẩm"],
+      answer:0, explanation:"Pricing strategy cần agent tương tác với thị trường, nhận feedback (revenue) và điều chỉnh hành động." },
+    { module:"C", difficulty:"medium",
+      q: "Transfer learning là gì?",
+      options:["Dùng lại kiến thức từ task/dataset đã train để cải thiện task mới","Train từ đầu trên dữ liệu mới","Chuyển dữ liệu giữa hai bảng","Copy model sang server khác"],
+      answer:0, explanation:"Pre-trained model (VGG, BERT) học feature tổng quát; fine-tune trên task mới → tiết kiệm data và compute." },
+    { module:"C", difficulty:"medium",
+      q: "Điều gì xảy ra khi dùng accuracy cho bài toán fraud detection với 0.1% positive?",
+      options:["Model đoán tất cả là 0 đạt 99.9% accuracy — số ảo, vô nghĩa","Accuracy vẫn tốt vì 99.9% cao","Model tự cân bằng class","Không có vấn đề gì"],
+      answer:0, explanation:"Imbalanced classes làm accuracy misleading. Dùng precision/recall/F1/PR-AUC cho fraud." },
+    { module:"C", difficulty:"hard",
+      q: "Self-supervised learning khác supervised learning thế nào?",
+      options:["Self-supervised tự tạo label từ dữ liệu thô (không cần người dán nhãn)","Giống nhau","Self-supervised cần ít data hơn","Self-supervised chỉ cho NLP"],
+      answer:0, explanation:"BERT học bằng cách tự mask token rồi predict. Label tạo ra từ chính dữ liệu — không cần annotation." },
+    { module:"C", difficulty:"hard",
+      q: "Bài toán anomaly detection trong hệ thống IT phù hợp với loại học nào và vì sao?",
+      options:["Unsupervised (hoặc semi-supervised) vì anomaly hiếm và khó có nhãn đầy đủ","Supervised vì có log","RL vì cần action","Regression vì output là số"],
+      answer:0, explanation:"Anomaly thường thiếu nhãn, không cân bằng. Unsupervised (isolation forest, autoencoder) học distribution bình thường." },
+    { module:"C", difficulty:"hard",
+      q: "Tại sao không nên bắt đầu thiết kế AI từ tên thuật toán?",
+      options:["Nên bắt đầu từ bài toán, dữ liệu, metric và ràng buộc deploy; thuật toán chỉ là phương tiện","Thuật toán quan trọng hơn dữ liệu","Metric không cần thiết trước khi chọn model","Model phức tạp luôn tốt hơn"],
+      answer:0, explanation:"Problem-first thinking: hiểu rõ bài toán mới chọn model phù hợp. Deep learning không phải lúc nào cũng cần." },
+    { module:"C", difficulty:"hard",
+      q: "Data augmentation phổ biến nhất trong loại bài toán nào?",
+      options:["Supervised learning với ảnh hoặc text khi data ít","Clustering","Regression tabular","RL"],
+      answer:0, explanation:"Flip/crop/rotate ảnh tạo thêm training samples → giảm overfit. Với tabular data ít dùng hơn." },
+    { module:"C", difficulty:"hard",
+      q: "Objective function của unsupervised autoencoder là?",
+      options:["Minimize reconstruction error: ‖x − decoder(encoder(x))‖²","Maximize reward","Minimize cross entropy với nhãn","Maximize margin"],
+      answer:0, explanation:"Autoencoder học encode-decode; không cần nhãn. Loss = lỗi tái tạo input." },
+    { module:"C", difficulty:"hard",
+      q: "Khi nào nên dùng rule-based thay vì ML?",
+      options:["Khi logic rõ ràng, ít exception và cần explainability tuyệt đối","Khi có nhiều dữ liệu","Khi bài toán phức tạp","Khi cần accuracy cao nhất"],
+      answer:0, explanation:"Nếu 'if amount > 10M and foreign country → flag' đủ tốt, không cần model. Đơn giản > phức tạp." },
+    { module:"C", difficulty:"hard",
+      q: "Multi-task learning là gì?",
+      options:["Train một model để giải đồng thời nhiều task liên quan, chia sẻ representation","Train nhiều model riêng biệt","Transfer learning sau khi train xong","Ensemble nhiều model"],
+      answer:0, explanation:"MTL học shared feature tốt hơn khi các task liên quan. Ví dụ: detect object + phân loại cùng lúc." },
+    { module:"C", difficulty:"hard",
+      q: "Evaluation metric cho K-means (unsupervised) khác supervised ở điểm gì?",
+      options:["Không có ground-truth nhãn → dùng silhouette, inertia, hoặc đánh giá downstream task","Dùng accuracy","Dùng F1","Dùng RMSE"],
+      answer:0, explanation:"Unsupervised không có nhãn để so sánh trực tiếp. Silhouette đo cụm tốt dựa trên khoảng cách nội/liên cụm." }
+  ],
+
+  // ══════════════════════════════════════════════════════════
+  // MODULE C — BÀI 2: K-means & PCA
+  // ══════════════════════════════════════════════════════════
+  "kmeans-pca": [
+    { module:"C", difficulty:"easy",
+      q: "K-means cần chỉ định điều gì trước khi chạy?",
+      options:["Số cụm k","Nhãn y","Learning rate","Train/test split"],
+      answer:0, explanation:"K-means không tự chọn k. Cần thử nhiều k và dùng elbow method hoặc silhouette." },
+    { module:"C", difficulty:"easy",
+      q: "Thuật toán K-means lặp lại hai bước nào?",
+      options:["Gán điểm vào centroid gần nhất → cập nhật centroid = trung bình cụm","Tính gradient → cập nhật weight","Chọn k → split data","Scale → cluster"],
+      answer:0, explanation:"E-step: gán; M-step: cập nhật centroid. Lặp đến khi centroid không đổi (hội tụ)." },
+    { module:"C", difficulty:"easy",
+      q: "PCA dùng để làm gì?",
+      options:["Giảm số chiều dữ liệu giữ lại phương sai lớn nhất","Phân loại ảnh","Dự đoán giá trị liên tục","Tăng số chiều"],
+      answer:0, explanation:"PCA tìm principal components (trục phương sai lớn nhất) để project dữ liệu xuống không gian chiều thấp hơn." },
+    { module:"C", difficulty:"easy",
+      q: "Tại sao cần StandardScaler trước K-means?",
+      options:["Feature đơn vị khác nhau có thể áp đảo khoảng cách Euclidean","K-means yêu cầu dữ liệu nhị phân","Scale giúp chọn k tốt hơn","Không cần scale"],
+      answer:0, explanation:"K-means dùng khoảng cách Euclidean. Feature có giá trị lớn hơn thống trị → phải normalize." },
+    { module:"C", difficulty:"easy",
+      q: "Inertia (WCSS) đo gì trong K-means?",
+      options:["Tổng squared distance từ mỗi điểm đến centroid của cụm nó thuộc","Khoảng cách giữa các centroid","Số cụm tối ưu","Variance của toàn bộ dữ liệu"],
+      answer:0, explanation:"Inertia = within-cluster sum of squares. Càng nhỏ càng tốt, nhưng k lớn luôn giảm inertia." },
+    { module:"C", difficulty:"medium",
+      q: "Elbow method để làm gì?",
+      options:["Chọn k bằng cách tìm điểm inertia giảm đột ngột chậm lại","Scale feature","Chọn số principal components","Detect outlier"],
+      answer:0, explanation:"Vẽ inertia theo k: điểm 'khuỷu tay' là k tối ưu khi thêm cụm ít giảm inertia thêm." },
+    { module:"C", difficulty:"medium",
+      q: "Silhouette score s = 1.0 có nghĩa là?",
+      options:["Điểm thuộc đúng cụm, cách xa cụm kế tiếp — phân cụm hoàn hảo","Phân cụm xấu","Điểm nằm trên ranh giới cụm","k chọn sai"],
+      answer:0, explanation:"s ∈ [−1,1]. s≈1: tốt. s≈0: ranh giới. s<0: có thể thuộc sai cụm." },
+    { module:"C", difficulty:"medium",
+      q: "PCA fit trên toàn bộ dữ liệu trước khi split có thể gây ra vấn đề gì trong supervised pipeline?",
+      options:["Leakage nhẹ — thống kê variance từ test ảnh hưởng transform của train","Không có vấn đề gì","PCA không dùng được trong supervised","PCA tự tránh leakage"],
+      answer:0, explanation:"Như scaler, PCA nên fit chỉ trên X_train rồi transform cả train và test." },
+    { module:"C", difficulty:"medium",
+      q: "Số principal components giữ lại thường dựa trên tiêu chí gì?",
+      options:["Giữ đủ 80-90% explained variance","Bằng số feature gốc","Bằng k trong K-means","Luôn dùng 2 components"],
+      answer:0, explanation:"Cumulative explained variance ratio: chọn k nhỏ nhất sao cho Σλᵢ/Σλ ≥ 0.80." },
+    { module:"C", difficulty:"medium",
+      q: "Nhược điểm lớn nhất của K-means là gì?",
+      options:["Nhạy với giá trị khởi tạo centroid và số k phải chọn trước","Luôn hội tụ về toàn cục tối ưu","Chỉ dùng cho dữ liệu ảnh","Không scale được"],
+      answer:0, explanation:"K-means có thể hội tụ về local optima. Dùng n_init='auto' để chạy nhiều lần và chọn kết quả tốt nhất." },
+    { module:"C", difficulty:"medium",
+      q: "PCA 2 components thường dùng để làm gì?",
+      options:["Visualize dữ liệu nhiều chiều trong 2D để phát hiện cụm/outlier","Train classification model","Tính correlation","Thay thế label"],
+      answer:0, explanation:"Biểu diễn 2D từ PCA giúp nhìn thấy cấu trúc dữ liệu, cụm, và điểm bất thường." },
+    { module:"C", difficulty:"medium",
+      q: "K-means hoạt động tốt khi cụm có hình dạng như thế nào?",
+      options:["Hình cầu (convex), gần tròn và kích thước tương đương","Hình lưỡi liềm hoặc đồng tâm","Rất dài và hẹp","Bất kỳ hình dạng"],
+      answer:0, explanation:"K-means dùng centroid (trung bình) nên giả định cụm convex và tương đối đều. DBSCAN tốt hơn cho hình dạng phức tạp." },
+    { module:"C", difficulty:"hard",
+      q: "DBSCAN khác K-means ở điểm gì?",
+      options:["Không cần chọn k trước, phát hiện cụm hình dạng bất kỳ và xử lý được noise/outlier","DBSCAN cần nhãn","DBSCAN chỉ dùng cho 2D","K-means tốt hơn trong mọi trường hợp"],
+      answer:0, explanation:"DBSCAN dùng density để xác định cụm. Điểm thưa = outlier/noise. Không giả định hình cầu." },
+    { module:"C", difficulty:"hard",
+      q: "Principal components là gì về mặt toán học?",
+      options:["Eigenvectors của covariance matrix, sắp xếp theo eigenvalue giảm dần","Trung bình của feature","Gradient của loss","Hệ số hồi quy"],
+      answer:0, explanation:"PCA: SVD hoặc eigen decomposition trên covariance matrix. PC1 là eigenvector có eigenvalue lớn nhất." },
+    { module:"C", difficulty:"hard",
+      q: "Khi nào nên dùng PCA trước khi train model?",
+      options:["Khi features rất nhiều (>100), có đa cộng tuyến cao, hoặc cần visualize","Luôn luôn","Khi model đã overfit","Khi dữ liệu thiếu nhiều"],
+      answer:0, explanation:"PCA hữu ích: giảm chiều, loại đa cộng tuyến, tăng tốc train. Nhưng mất interpretability feature gốc." },
+    { module:"C", difficulty:"hard",
+      q: "Whitening trong PCA làm gì thêm ngoài giảm chiều?",
+      options:["Chia mỗi principal component cho std của nó → components có variance bằng nhau","Tăng số components","Tạo nhãn tự động","Loại bỏ outlier"],
+      answer:0, explanation:"PCA whitening: uncorrelated + unit variance cho mỗi component. Dùng trong preprocessing cho neural networks." },
+    { module:"C", difficulty:"hard",
+      q: "Tại sao K-means++ cải thiện K-means chuẩn?",
+      options:["Khởi tạo centroid thông minh: centroid mới ưu tiên chọn xa các centroid hiện có","Tự chọn k","Không cần scale","Chạy nhanh hơn"],
+      answer:0, explanation:"K-means++ giảm khả năng hội tụ về local optima bằng cách khởi tạo centroid phân tán đều." },
+    { module:"C", difficulty:"hard",
+      q: "Sau PCA, feature gốc không còn giải thích được trực tiếp. Điều này ảnh hưởng gì?",
+      options:["Mất interpretability — không thể nói 'feature income quan trọng'","Không ảnh hưởng gì","Model tốt hơn vì loại feature yếu","PCA vẫn giữ tên feature"],
+      answer:0, explanation:"Principal components là tổ hợp tuyến tính của features gốc. Khó giải thích ý nghĩa kinh doanh." },
+    { module:"C", difficulty:"hard",
+      q: "Hierarchical clustering khác K-means ở điểm nào?",
+      options:["Không cần chọn k trước; tạo dendrogram để cắt ở mức distance tuỳ chọn","Cần nhãn","Chỉ cho 1D","Không dùng khoảng cách"],
+      answer:0, explanation:"Agglomerative clustering gom từng điểm từ dưới lên; dendrogram cho phép chọn số cụm sau khi có kết quả." },
+    { module:"C", difficulty:"hard",
+      q: "Explained variance ratio của PC1=0.45, PC2=0.30. Dùng 2 components giải thích được bao nhiêu % variance?",
+      options:["75%","45%","30%","15%"],
+      answer:0, explanation:"Cumulative: 0.45 + 0.30 = 0.75 = 75% variance được giữ lại với 2 components." }
+  ],
+
+  // ══════════════════════════════════════════════════════════
+  // MODULE C — BÀI 3: Model cổ điển
+  // ══════════════════════════════════════════════════════════
+  "classic-models": [
+    { module:"C", difficulty:"easy",
+      q: "Linear Regression dùng để giải bài toán nào?",
+      options:["Regression — dự đoán giá trị liên tục","Classification","Clustering","Dimensionality reduction"],
+      answer:0, explanation:"Output của Linear Regression là số thực liên tục. Loss thường là MSE." },
+    { module:"C", difficulty:"easy",
+      q: "Hàm sigmoid trong Logistic Regression trả về giá trị trong khoảng nào?",
+      options:["(0, 1)","(−∞, +∞)","(−1, 1)","[0, 100]"],
+      answer:0, explanation:"σ(z) = 1/(1+e^−z) ∈ (0,1) — diễn giải được là xác suất." },
+    { module:"C", difficulty:"easy",
+      q: "Decision Tree chọn điểm split dựa trên tiêu chí nào?",
+      options:["Gini impurity hoặc Information Gain (entropy)","MSE trên toàn bộ dữ liệu","Khoảng cách Euclidean","Pearson correlation"],
+      answer:0, explanation:"Split tốt nhất là split giảm Gini/entropy nhiều nhất, tức là tạo cụm nhãn thuần nhất hơn." },
+    { module:"C", difficulty:"easy",
+      q: "Random Forest khác Decision Tree đơn ở điểm gì chính?",
+      options:["Nhiều cây trên bootstrap samples + feature subsampling → giảm variance","Chỉ một cây nhưng sâu hơn","Không dùng split","Chỉ dùng cho regression"],
+      answer:0, explanation:"Bagging + feature subsampling tạo cây đa dạng; majority vote giảm variance so với cây đơn." },
+    { module:"C", difficulty:"easy",
+      q: "L2 Regularization (Ridge) thêm gì vào loss function?",
+      options:["λΣwⱼ² — phạt weight lớn","λΣ|wⱼ| — phạt weight lớn và có thể về 0","Thêm dropout","Không thay đổi loss"],
+      answer:0, explanation:"Ridge: λ‖w‖². Lasso: λ‖w‖₁. Ridge shrinks weight; Lasso có thể zero weight." },
+    { module:"C", difficulty:"medium",
+      q: "SVM tìm gì khi training?",
+      options:["Hyperplane có margin lớn nhất giữa các class","Cây phân loại","Centroid của cụm","Gradient tốt nhất"],
+      answer:0, explanation:"Support Vector Machine maximize margin = 2/‖w‖. Support vectors là các điểm gần hyperplane nhất." },
+    { module:"C", difficulty:"medium",
+      q: "Khi nào Lasso (L1) ưu tiên hơn Ridge (L2)?",
+      options:["Khi cần feature selection — L1 có thể shrink weight về đúng 0","Khi muốn giữ tất cả feature","Khi dữ liệu nhỏ","Khi output liên tục"],
+      answer:0, explanation:"L1 tạo sparse model (nhiều weight = 0) → tự động loại feature không quan trọng." },
+    { module:"C", difficulty:"medium",
+      q: "Decision Tree sâu 30 levels thường gặp vấn đề gì?",
+      options:["Overfit — học thuộc training data, test performance kém","Underfit","Không học được gì","Chạy quá nhanh"],
+      answer:0, explanation:"Cây sâu có thể tạo leaf thuần nhất chỉ với 1-2 mẫu → overfit nghiêm trọng." },
+    { module:"C", difficulty:"medium",
+      q: "Feature importance trong Random Forest tính bằng cách nào?",
+      options:["Trung bình Gini decrease hoặc permutation importance qua tất cả cây","Độ tương quan với target","Hệ số trong linear model","Không thể tính"],
+      answer:0, explanation:"Gini importance: tổng Gini decrease khi feature được dùng để split, trung bình qua tất cả cây." },
+    { module:"C", difficulty:"medium",
+      q: "Kernel SVM khác linear SVM ở điểm gì?",
+      options:["Dùng kernel trick để project dữ liệu lên không gian cao chiều, phân loại ranh giới phi tuyến","Chỉ dùng cho regression","Không cần hyperparameter","Nhanh hơn với dữ liệu lớn"],
+      answer:0, explanation:"RBF/polynomial kernel ngầm chiếu lên không gian vô hạn chiều, cho phép ranh giới phi tuyến." },
+    { module:"C", difficulty:"medium",
+      q: "Gradient Boosting (XGBoost) khác Random Forest ở điểm gì?",
+      options:["Boosting: cây mới học lỗi của cây trước (sequential); RF: cây độc lập (parallel)","RF học tuần tự","XGBoost dùng bagging","Không có khác biệt"],
+      answer:0, explanation:"Gradient Boosting cộng dần các weak learners; mỗi cây fit residuals của tổ hợp trước." },
+    { module:"C", difficulty:"medium",
+      q: "Naive Bayes 'naive' vì giả định gì?",
+      options:["Các feature độc lập có điều kiện với nhau (given class)","Feature không quan trọng","Dữ liệu chuẩn hóa","Chỉ dùng 2 feature"],
+      answer:0, explanation:"P(x₁,…,xₙ|y) = Π P(xᵢ|y). Giả định độc lập rất mạnh nhưng thực ra hoạt động tốt trong nhiều trường hợp (NLP)." },
+    { module:"C", difficulty:"hard",
+      q: "Hyperparameter C trong SVM kiểm soát điều gì?",
+      options:["Trade-off giữa margin rộng và phân loại đúng: C lớn → ít lỗi train, margin hẹp hơn","Số support vectors","Learning rate","Số feature"],
+      answer:0, explanation:"C nhỏ: chấp nhận lỗi train để margin rộng (regularize nhiều). C lớn: ít lỗi train, margin hẹp (overfit nhiều hơn)." },
+    { module:"C", difficulty:"hard",
+      q: "max_depth trong Decision Tree ảnh hưởng gì đến bias-variance?",
+      options:["Depth nhỏ → bias cao (underfit); depth lớn → variance cao (overfit)","Depth lớn → luôn tốt hơn","Không ảnh hưởng","Depth chỉ ảnh hưởng tốc độ"],
+      answer:0, explanation:"Điều chỉnh max_depth là cách regularize cây. Dùng CV để tìm depth tối ưu." },
+    { module:"C", difficulty:"hard",
+      q: "OOB (Out-of-Bag) error trong Random Forest là gì?",
+      options:["Validation error ước lượng bằng các mẫu không được chọn trong bootstrap sample của mỗi cây","Test error","Train error","CV error"],
+      answer:0, explanation:"Mỗi cây chỉ train trên ~63% mẫu (bootstrap). ~37% còn lại (OOB) dùng để validate cây đó. OOB error ≈ CV error." },
+    { module:"C", difficulty:"hard",
+      q: "Logistic Regression multinomial (softmax) dùng khi nào?",
+      options:["Khi có nhiều hơn 2 class (multiclass classification)","Khi chỉ có 2 class","Khi output là số liên tục","Khi dữ liệu không cân bằng"],
+      answer:0, explanation:"Binary: sigmoid output. Multiclass: softmax output, one weight vector per class, cross entropy loss." },
+    { module:"C", difficulty:"hard",
+      q: "Stacking ensemble khác bagging và boosting thế nào?",
+      options:["Stacking dùng meta-model học kết hợp prediction của nhiều base model khác nhau","Stacking = bagging với nhiều loại cây","Stacking chỉ dùng RF","Không có khác biệt"],
+      answer:0, explanation:"Stacking: L1 base models (Logistic, RF, XGB,...) → L2 meta-model học cách blend dự đoán của L1." },
+    { module:"C", difficulty:"hard",
+      q: "Khi dataset có 1 triệu mẫu, model nào thường được chọn đầu tiên vì lý do compute?",
+      options:["Logistic Regression hoặc Linear SVM (linear models scale tốt)","Deep learning","Random Forest với 1000 cây","KNN"],
+      answer:0, explanation:"Linear models O(n×p) rất nhanh với n lớn. KNN tốn O(n) per query. RF tốn nhớ. DL cần GPU." },
+    { module:"C", difficulty:"hard",
+      q: "Partial dependence plot (PDP) dùng để làm gì?",
+      options:["Hiển thị tác động trung bình của một feature lên prediction (mọi giá trị feature khác)","Tính feature importance","Detect outlier","Compare models"],
+      answer:0, explanation:"PDP: marginalize các feature khác, vẽ prediction trung bình theo feature X → thấy trend tuyến tính/phi tuyến." },
+    { module:"C", difficulty:"hard",
+      q: "Elastic Net là gì?",
+      options:["Kết hợp L1 và L2: loss + λ₁Σ|wⱼ| + λ₂Σwⱼ²","Chỉ L1","Chỉ L2","Không regularize"],
+      answer:0, explanation:"Elastic Net lấy ưu điểm cả hai: L1 giúp feature selection, L2 xử lý correlated features." }
+  ],
+
+  // ══════════════════════════════════════════════════════════
+  // MODULE C — BÀI 4: ML pipeline, overfit/underfit
+  // ══════════════════════════════════════════════════════════
+  "pipeline-overfit": [
+    { module:"C", difficulty:"easy",
+      q: "Overfitting xảy ra khi nào?",
+      options:["Train accuracy cao nhưng validation/test accuracy thấp hơn nhiều","Cả train và test đều thấp","Train và test đều cao","Model không học được gì"],
+      answer:0, explanation:"Overfit: model học nhiễu trong train, không generalize được sang data mới." },
+    { module:"C", difficulty:"easy",
+      q: "Underfitting xảy ra khi nào?",
+      options:["Train và test đều có loss cao — model quá đơn giản","Train tốt nhưng test kém","Chỉ xảy ra với linear model","Khi dữ liệu nhiều"],
+      answer:0, explanation:"Underfit: high bias. Model không đủ phức tạp hoặc feature yếu để học pattern." },
+    { module:"C", difficulty:"easy",
+      q: "Phương pháp nào giúp giảm overfitting trong neural network?",
+      options:["Dropout, L2 regularization, early stopping, thêm dữ liệu","Tăng số layer","Giảm learning rate về 0","Tăng số epoch"],
+      answer:0, explanation:"Regularization techniques giảm variance: dropout tắt neuron ngẫu nhiên; L2 phạt weight lớn; early stopping dừng kịp thời." },
+    { module:"C", difficulty:"easy",
+      q: "Early stopping dừng training khi nào?",
+      options:["Khi validation loss không giảm sau patience epoch liên tiếp","Khi train loss = 0","Khi đủ số epoch","Khi accuracy đạt 100%"],
+      answer:0, explanation:"Monitor val_loss; restore best weights. Tránh train quá nhiều gây overfit." },
+    { module:"C", difficulty:"easy",
+      q: "Bước nào trong ML pipeline thường được thực hiện TRƯỚC khi split data?",
+      options:["Thu thập và định nghĩa bài toán","Feature scaling","Model training","Hyperparameter tuning"],
+      answer:0, explanation:"Thu thập data và hiểu bài toán xảy ra trước. Scaling/imputing phải sau split để tránh leakage." },
+    { module:"C", difficulty:"medium",
+      q: "Bias cao và variance thấp tương ứng với tình trạng nào?",
+      options:["Underfitting","Overfitting","Chính xác hoàn toàn","Không liên quan đến bias-variance"],
+      answer:0, explanation:"High bias = model quá đơn giản, không khớp dữ liệu train. Low variance = consistent nhưng sai." },
+    { module:"C", difficulty:"medium",
+      q: "Learning curve nào chỉ ra overfitting?",
+      options:["Train loss thấp, val loss cao và khoảng cách tăng dần theo epoch","Cả hai cùng cao","Cả hai cùng thấp","Cả hai cùng giảm song song"],
+      answer:0, explanation:"Gap ngày càng rộng giữa train và val là dấu hiệu điển hình của overfit." },
+    { module:"C", difficulty:"medium",
+      q: "Tăng regularization parameter λ sẽ ảnh hưởng thế nào đến model?",
+      options:["Tăng bias (đơn giản hơn), giảm variance (ít overfit hơn)","Tăng cả bias và variance","Giảm cả hai","Không ảnh hưởng"],
+      answer:0, explanation:"λ lớn → phạt weight nhiều hơn → weight nhỏ hơn → model đơn giản hơn → bias tăng, variance giảm." },
+    { module:"C", difficulty:"medium",
+      q: "Data augmentation giúp gì trong việc giảm overfit?",
+      options:["Tăng kích thước tập train hiệu quả bằng cách tạo biến thể của dữ liệu có sẵn","Giảm learning rate","Chọn model đơn giản hơn","Bỏ feature yếu"],
+      answer:0, explanation:"Flip, crop, rotate ảnh tạo thêm mẫu đa dạng → model học invariance → ít overfit." },
+    { module:"C", difficulty:"medium",
+      q: "Batch normalization giúp training neural network thế nào?",
+      options:["Normalize activation trong mỗi layer → giảm internal covariate shift, cho phép learning rate cao hơn","Thay dropout","Tạo dữ liệu mới","Giảm số layer"],
+      answer:0, explanation:"BatchNorm: chuẩn hóa output layer → gradient ổn định hơn, training nhanh hơn, ít nhạy cảm với khởi tạo." },
+    { module:"C", difficulty:"medium",
+      q: "Khi nào nên thêm dữ liệu để giảm overfit vs khi nào nên đơn giản hóa model?",
+      options:["Thêm data khi có thể thu thập; đơn giản hóa khi data đã đủ và vẫn overfit","Luôn thêm data","Luôn đơn giản hóa","Không liên quan"],
+      answer:0, explanation:"Thêm data giảm variance. Regularization, dropout, pruning đơn giản hóa model. Dùng learning curve để quyết định." },
+    { module:"C", difficulty:"medium",
+      q: "Evaluate trên test set nhiều lần để chọn model gây vấn đề gì?",
+      options:["Biến test set thành validation set trá hình — final metric lạc quan","Không có vấn đề","Test score giảm","Model học kém hơn"],
+      answer:0, explanation:"Mỗi lần evaluate và quyết định dựa vào test score là 'peeking'. True test chỉ được dùng một lần cuối." },
+    { module:"C", difficulty:"hard",
+      q: "Weight decay trong deep learning là gì?",
+      options:["L2 regularization: giảm dần weight theo tỉ lệ (1−λη) ở mỗi bước gradient","Giảm learning rate theo thời gian","Dropout với xác suất giảm dần","Cắt bỏ neuron"],
+      answer:0, explanation:"Weight decay = L2 regularization. Sau mỗi update: w ← w(1−λη) − η∇L. Shrink weight về 0." },
+    { module:"C", difficulty:"hard",
+      q: "Double descent phenomenon là gì?",
+      options:["Khi số tham số model vượt số mẫu, test error có thể giảm trở lại (không chỉ tăng)","Overfitting selalu tăng khi model lớn hơn","Train error luôn bằng 0","Regularization luôn giúp"],
+      answer:0, explanation:"Modern ML: over-parameterized models (DL) có thể generalize tốt dù interpolate train data. Vượt ra ngoài bias-variance classical." },
+    { module:"C", difficulty:"hard",
+      q: "Trước khi deploy, cần kiểm tra model trên dữ liệu gì?",
+      options:["Holdout test set chưa từng dùng trong training/tuning","Validation set","Training set","Toàn bộ dataset"],
+      answer:0, explanation:"Test set độc lập là ước lượng không lệch của hiệu năng thực. Validation set đã bị 'ô nhiễm' bởi model selection." },
+    { module:"C", difficulty:"hard",
+      q: "Khi train_loss = 0.02 và val_loss = 0.03, kết luận gì?",
+      options:["Generalization tốt, gap nhỏ — model phù hợp","Overfit nghiêm trọng","Underfit","Cần thêm regularization"],
+      answer:0, explanation:"Gap nhỏ (0.01) và cả hai thấp → model generalize tốt. Không nhất thiết cần thêm regularization." },
+    { module:"C", difficulty:"hard",
+      q: "Learning rate warmup trong training DL dùng khi nào và tại sao?",
+      options:["Bắt đầu lr nhỏ, tăng dần rồi giảm → ổn định gradient đầu training khi weight ngẫu nhiên","Luôn giữ lr không đổi","Chỉ cho LSTM","Thay thế BatchNorm"],
+      answer:0, explanation:"Lúc đầu training, gradient lớn và không ổn định. Warmup từ từ → tránh large updates phá vỡ khởi tạo." },
+    { module:"C", difficulty:"hard",
+      q: "Pruning trong neural network là gì?",
+      options:["Loại bỏ weight/neuron nhỏ không quan trọng để nén model","Thêm layer mới","Tăng dropout","Giảm batch size"],
+      answer:0, explanation:"Pruning giảm kích thước model (inference nhanh hơn, ít RAM) mà ít mất accuracy." },
+    { module:"C", difficulty:"hard",
+      q: "Class imbalance trong training gây ra vấn đề gì với loss?",
+      options:["Loss bị thống trị bởi class majority → model học bias về class đông","Loss giảm đều","Không ảnh hưởng","Overfitting luôn xảy ra"],
+      answer:0, explanation:"Giải pháp: class_weight, oversampling (SMOTE), undersampling, focal loss." },
+    { module:"C", difficulty:"hard",
+      q: "Cách tốt nhất để chọn learning rate cho deep learning?",
+      options:["Learning rate finder: tăng lr theo lũy thừa, theo dõi loss, chọn lr trước khi loss tăng nhanh","Luôn dùng 0.001","Trial and error không hệ thống","Lấy lr từ bài báo gốc"],
+      answer:0, explanation:"LR range test (Smith 2017): sweep lr → tìm vùng loss giảm nhanh nhất → chọn lr tại đó." }
+  ],
+
+  // ══════════════════════════════════════════════════════════
+  // MODULE C — BÀI 5: Train/val/test, cross-validation, leakage
+  // ══════════════════════════════════════════════════════════
+  "validation-crossval": [
+    { module:"C", difficulty:"easy",
+      q: "Test set dùng để làm gì?",
+      options:["Ước lượng hiệu năng thực tế — chỉ dùng một lần sau khi chọn xong model","Chọn hyperparameter","Train model","Inspect dữ liệu"],
+      answer:0, explanation:"Test set là 'final judge'. Dùng nhiều lần để quyết định = leakage." },
+    { module:"C", difficulty:"easy",
+      q: "K-fold cross-validation chia dữ liệu thế nào?",
+      options:["Thành k phần bằng nhau, mỗi lần dùng 1 phần làm validation, k-1 phần làm train","Chỉ chia một lần","Chia ngẫu nhiên mỗi epoch","Giống train/test split"],
+      answer:0, explanation:"5-fold: 5 lần train/val, mỗi lần dùng fold khác nhau làm val. Score = trung bình 5 folds." },
+    { module:"C", difficulty:"easy",
+      q: "stratify=y trong train_test_split giúp gì?",
+      options:["Giữ tỉ lệ class trong train và test giống dataset gốc","Tăng tốc split","Loại bỏ duplicate","Shuffle data"],
+      answer:0, explanation:"Đặc biệt quan trọng khi class imbalanced: 1% fraud cần được giữ ~1% ở cả train và test." },
+    { module:"C", difficulty:"easy",
+      q: "Data leakage là gì?",
+      options:["Thông tin từ validation/test ảnh hưởng đến quá trình training → metric lạc quan","Data bị mất","RAM tràn","Model chạy chậm"],
+      answer:0, explanation:"Leakage: model 'biết trước' thông tin không nên có lúc train → score cao giả tạo, deploy kém." },
+    { module:"C", difficulty:"easy",
+      q: "Với dữ liệu time-series, cách split nào đúng?",
+      options:["Train trên thời gian cũ, test trên thời gian mới (không shuffle)","Random shuffle rồi split","Stratified split","5-fold CV thông thường"],
+      answer:0, explanation:"Temporal split: tránh dùng dữ liệu tương lai để dự đoán quá khứ (look-ahead bias)." },
+    { module:"C", difficulty:"medium",
+      q: "Leave-One-Out Cross-Validation (LOOCV) là gì và khi nào dùng?",
+      options:["k=n: mỗi mẫu làm validation một lần; dùng khi n rất nhỏ","Bỏ qua validation","Luôn dùng thay CV","Chỉ cho regression"],
+      answer:0, explanation:"LOOCV: k = số mẫu. Tốn compute O(n) models nhưng dùng gần toàn bộ data để train mỗi lần." },
+    { module:"C", difficulty:"medium",
+      q: "Tại sao cần Stratified K-fold cho classification?",
+      options:["Đảm bảo mỗi fold có tỉ lệ class tương đương → ước lượng score ổn định","Tăng tốc CV","Giống K-fold thường","Chỉ dùng cho regression"],
+      answer:0, explanation:"Không stratify với imbalanced data: một fold có thể không có class hiếm → val score không đáng tin." },
+    { module:"C", difficulty:"medium",
+      q: "Fit StandardScaler trên X rồi split train/test là ví dụ leakage loại nào?",
+      options:["Train-test contamination — thống kê test rò vào preprocessing","Target leakage","Temporal leakage","Không phải leakage"],
+      answer:0, explanation:"Scaler học mean/std từ cả test. Model thấy distribution của test khi train → metric optimistic." },
+    { module:"C", difficulty:"medium",
+      q: "Nested cross-validation dùng để làm gì?",
+      options:["Outer CV ước lượng generalization error; inner CV tune hyperparameter — không bias selection","Chỉ tune hyperparameter","Chỉ ước lượng error","Thay thế test set"],
+      answer:0, explanation:"Nested CV: inner loop chọn hyperparameter, outer loop đánh giá model đã tune → ước lượng không lệch." },
+    { module:"C", difficulty:"medium",
+      q: "Sau khi chọn model bằng CV, bước deploy cuối là gì?",
+      options:["Retrain trên toàn bộ train+val data với hyperparameter đã chọn → evaluate trên test lần cuối","Chỉ dùng model từ CV","Không cần retrain","Evaluate lại trên CV"],
+      answer:0, explanation:"Dùng toàn bộ labeled data để train final model (không lãng phí val data). Test chỉ dùng một lần cuối." },
+    { module:"C", difficulty:"medium",
+      q: "Temporal leakage trong time-series xảy ra khi nào?",
+      options:["Dùng dữ liệu tương lai (sau thời điểm dự đoán) như feature","Scale không đúng","Có quá nhiều feature","Model quá đơn giản"],
+      answer:0, explanation:"Ví dụ: predict churn tháng 6 dùng total_spend cả năm (bao gồm tháng 7-12) → tương lai leak vào feature." },
+    { module:"C", difficulty:"medium",
+      q: "Target leakage là gì?",
+      options:["Feature phụ thuộc trực tiếp vào target hoặc được tạo sau khi target xảy ra","Scale sai","Train/val overlap","Shuffle sai"],
+      answer:0, explanation:"Ví dụ: predict nợ xấu dùng cột 'has_collection_notice' — notice chỉ có sau khi nợ xấu rồi." },
+    { module:"C", difficulty:"hard",
+      q: "Group K-fold dùng khi nào?",
+      options:["Khi mẫu có group (user/patient/store): đảm bảo cùng group không xuất hiện ở cả train và val","Khi class imbalanced","Khi dùng time-series","Khi muốn nhanh hơn stratified"],
+      answer:0, explanation:"Ví dụ: nhiều hình ảnh từ cùng bệnh nhân. Nếu bệnh nhân xuất hiện ở cả train và val → data leakage." },
+    { module:"C", difficulty:"hard",
+      q: "Purged cross-validation trong finance là gì?",
+      options:["Xóa overlap giữa train và val khi dữ liệu time-series có label window (embargo period)","Giống K-fold thường","Thay thế stratified CV","Chỉ dùng cho NLP"],
+      answer:0, explanation:"Label window tạo overlap temporal. Purging: bỏ dữ liệu trong embargo period quanh val fold để tránh leakage." },
+    { module:"C", difficulty:"hard",
+      q: "Tại sao val score từ grid search thường lạc quan hơn true generalization?",
+      options:["Selection bias: nhiều hyperparameter thử trên cùng val → vô tình overfit val","Val set quá nhỏ","Hyperparameter không quan trọng","Model quá đơn giản"],
+      answer:0, explanation:"Mỗi lần test hyperparameter trên val = một lần 'peek'. Nhiều configs → val score optimistic. Dùng nested CV." },
+    { module:"C", difficulty:"hard",
+      q: "Cách phát hiện data leakage trong thực tế?",
+      options:["CV score cao bất thường, feature correlation > 0.99 với target, performance drop khi deploy","CV score thấp","Model hội tụ chậm","Loss không giảm"],
+      answer:0, explanation:"Dấu hiệu: score quá tốt trên CV, feature 'magic' có importance quá cao, model fail khi deploy thực." },
+    { module:"C", difficulty:"hard",
+      q: "80/10/10 split (train/val/test) thích hợp khi nào?",
+      options:["Dataset đủ lớn (>10K mẫu) để val/test có statistical power","Dataset nhỏ (<500 mẫu)","Time-series","Dữ liệu hình ảnh nhỏ"],
+      answer:0, explanation:"Với dataset lớn: 10% val/test vẫn đủ nhiều mẫu. Với dataset nhỏ: dùng CV để tận dụng tối đa data." },
+    { module:"C", difficulty:"hard",
+      q: "Pipeline sklearn đảm bảo chống leakage thế nào?",
+      options:["fit_transform chỉ trên X_train trong mỗi CV fold; transform X_val/test — tự động nhờ Pipeline","Không đảm bảo","Chỉ cho StandardScaler","Cần code thủ công"],
+      answer:0, explanation:"sklearn Pipeline với cross_val_score: mỗi fold, Pipeline fit preprocessing chỉ trên train fold → không leakage." },
+    { module:"C", difficulty:"hard",
+      q: "Số fold k ảnh hưởng thế nào đến CV?",
+      options:["k lớn: ít bias hơn (nhiều data train), variance cao hơn, tốn compute; k nhỏ: ngược lại","k không ảnh hưởng","k=2 luôn đủ","k nên bằng số mẫu"],
+      answer:0, explanation:"k=5 hoặc k=10 là cân bằng phổ biến. LOOCV (k=n) gần unbiased nhưng variance cao và rất chậm." },
+    { module:"C", difficulty:"hard",
+      q: "Tại sao không shuffle time-series trước khi CV?",
+      options:["Shuffle phá vỡ thứ tự thời gian → dữ liệu tương lai trong train, dữ liệu quá khứ trong val → leakage","Shuffle làm nhanh hơn","Không ảnh hưởng","Time-series không cần CV"],
+      answer:0, explanation:"Dùng TimeSeriesSplit trong sklearn: luôn train trước, test sau về mặt thời gian." }
+  ]
+
+});
