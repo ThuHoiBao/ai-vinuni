@@ -2653,6 +2653,118 @@ function escapeHtml(value) {
     .replaceAll("'", "&#039;");
 }
 
+function renderCodeBlock(code, language = "") {
+  const lang = language.trim();
+  const label = lang ? `<span class="code-language">${escapeHtml(lang)}</span>` : "";
+  const cleanCode = String(code).replace(/^\r?\n/, "").replace(/\r?\n$/, "");
+  return `
+    <div class="code-block question-code">
+      ${label}
+      <pre><code>${escapeHtml(cleanCode)}</code></pre>
+    </div>
+  `;
+}
+
+function renderInlineCodeText(text) {
+  return escapeHtml(text).replace(/\r?\n/g, "<br>");
+}
+
+function renderFormattedSegment(segment) {
+  let html = "";
+  let paragraph = "";
+  const inlineCodeRegex = /`([\s\S]*?)`/g;
+  let lastIndex = 0;
+  let match;
+
+  const flushParagraph = () => {
+    const cleanParagraph = paragraph.replace(/^(<br>)+|(<br>)+$/g, "").trim();
+    if (!cleanParagraph) {
+      paragraph = "";
+      return;
+    }
+    html += `<p>${cleanParagraph}</p>`;
+    paragraph = "";
+  };
+
+  while ((match = inlineCodeRegex.exec(segment))) {
+    paragraph += renderInlineCodeText(segment.slice(lastIndex, match.index));
+    const code = match[1];
+    if (/\r?\n/.test(code)) {
+      flushParagraph();
+      html += renderCodeBlock(code);
+    } else {
+      paragraph += `<code>${escapeHtml(code)}</code>`;
+    }
+    lastIndex = inlineCodeRegex.lastIndex;
+  }
+
+  paragraph += renderInlineCodeText(segment.slice(lastIndex));
+  flushParagraph();
+  return html;
+}
+
+function renderFormattedText(value) {
+  const text = String(value ?? "");
+  if (!text) return "";
+  const fenceRegex = /```([a-zA-Z0-9_+-]*)[ \t]*\r?\n?([\s\S]*?)```/g;
+  let html = "";
+  let lastIndex = 0;
+  let match;
+
+  while ((match = fenceRegex.exec(text))) {
+    html += renderFormattedSegment(text.slice(lastIndex, match.index));
+    html += renderCodeBlock(match[2], match[1]);
+    lastIndex = fenceRegex.lastIndex;
+  }
+
+  html += renderFormattedSegment(text.slice(lastIndex));
+  return html || `<p>${escapeHtml(text)}</p>`;
+}
+
+function renderInlineCodeBlock(code, language = "") {
+  const lang = language.trim();
+  const label = lang ? `<span class="code-language">${escapeHtml(lang)}</span>` : "";
+  const cleanCode = String(code).replace(/^\r?\n/, "").replace(/\r?\n$/, "");
+  return `<span class="inline-code-block">${label}<code>${escapeHtml(cleanCode)}</code></span>`;
+}
+
+function renderInlineFormattedSegment(segment) {
+  let html = "";
+  const inlineCodeRegex = /`([\s\S]*?)`/g;
+  let lastIndex = 0;
+  let match;
+
+  while ((match = inlineCodeRegex.exec(segment))) {
+    html += renderInlineCodeText(segment.slice(lastIndex, match.index));
+    const code = match[1];
+    html += /\r?\n/.test(code)
+      ? renderInlineCodeBlock(code)
+      : `<code>${escapeHtml(code)}</code>`;
+    lastIndex = inlineCodeRegex.lastIndex;
+  }
+
+  html += renderInlineCodeText(segment.slice(lastIndex));
+  return html;
+}
+
+function renderInlineFormattedText(value) {
+  const text = String(value ?? "");
+  if (!text) return "";
+  const fenceRegex = /```([a-zA-Z0-9_+-]*)[ \t]*\r?\n?([\s\S]*?)```/g;
+  let html = "";
+  let lastIndex = 0;
+  let match;
+
+  while ((match = fenceRegex.exec(text))) {
+    html += renderInlineFormattedSegment(text.slice(lastIndex, match.index));
+    html += renderInlineCodeBlock(match[2], match[1]);
+    lastIndex = fenceRegex.lastIndex;
+  }
+
+  html += renderInlineFormattedSegment(text.slice(lastIndex));
+  return html || escapeHtml(text);
+}
+
 function slugText(value) {
   return String(value)
     .toLowerCase()
@@ -3321,7 +3433,7 @@ function renderQuestion() {
       }
     </div>
     <div class="progress-bar" aria-hidden="true"><span style="width: ${progress}%"></span></div>
-    <h3 class="question-title">${escapeHtml(question.q)}</h3>
+    <div class="question-title" role="heading" aria-level="3">${renderFormattedText(question.q)}</div>
     ${isOpenQuestion ? renderOpenQuestion(question, currentAnswer) : renderMcqQuestion(question, selected)}
     <div class="quiz-footer">
       <span>${state.quiz.answers.filter((answer) => answer.correct).length} câu đúng</span>
@@ -3343,7 +3455,7 @@ function renderMcqQuestion(question, selected) {
           return `
             <button class="option-button ${className}" data-option="${optionIndex}" type="button"
               ${selected !== null ? "disabled" : ""}>
-              ${escapeHtml(option)}
+              ${renderInlineFormattedText(option)}
             </button>
           `;
         })
@@ -3353,7 +3465,7 @@ function renderMcqQuestion(question, selected) {
       selected !== null
         ? `<div class="explanation">
             <strong>${selected === question.answer ? "Đúng." : "Chưa đúng."}</strong>
-            ${escapeHtml(question.explanation)}
+            ${renderFormattedText(question.explanation)}
           </div>`
         : ""
     }
@@ -3378,7 +3490,7 @@ function renderOpenQuestion(question, currentAnswer) {
             <strong>Đáp án mẫu / rubric tự chấm</strong>
             <pre><code>${escapeHtml(question.modelAnswer || "")}</code></pre>
             <ul class="rubric-list">${(question.rubric || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
-            <p>${escapeHtml(question.explanation || "")}</p>
+            ${renderFormattedText(question.explanation || "")}
           </div>`
         : ""
     }
@@ -3470,7 +3582,7 @@ function renderExamQuestion(question, index) {
         <div class="progress-bar" aria-hidden="true"><span style="width: ${progress}%"></span></div>
       </header>
       <div class="exam-card-body">
-        <h2 class="question-title">${escapeHtml(question.q)}</h2>
+        <div class="question-title" role="heading" aria-level="2">${renderFormattedText(question.q)}</div>
         ${isOpen ? renderExamOpen(question) : renderExamMcq(question)}
         <div class="exam-actions">
           <button class="secondary-button" data-toggle-mark="${question.id}" type="button">
@@ -3495,7 +3607,7 @@ function renderExamMcq(question) {
           (option, optionIndex) => `
           <button class="option-button ${answer?.selected === optionIndex ? "selected" : ""}"
             data-exam-option="${optionIndex}" type="button">
-            ${escapeHtml(option)}
+            ${renderInlineFormattedText(option)}
           </button>
         `,
         )
@@ -3742,7 +3854,7 @@ function renderReportQuestionDetail(question) {
         </div>
       </header>
       <div class="exam-card-body">
-        <h2 class="question-title">${escapeHtml(question.q)}</h2>
+        <div class="question-title" role="heading" aria-level="2">${renderFormattedText(question.q)}</div>
         ${isOpen ? renderReportOpenDetail(question) : renderReportMcqDetail(question)}
         <div class="exam-actions">
           <button class="secondary-button" data-report-prev type="button" ${index === 0 ? "disabled" : ""}>Câu trước</button>
@@ -3764,7 +3876,7 @@ function renderReportMcqDetail(question) {
           const wrong = selected && !correct;
           return `
             <div class="option-button ${correct ? "correct" : ""} ${wrong ? "wrong" : ""} ${selected ? "selected" : ""}">
-              ${escapeHtml(option)}
+              ${renderInlineFormattedText(option)}
               ${correct ? "<strong>Đáp án đúng</strong>" : ""}
               ${wrong ? "<strong>Bạn chọn</strong>" : ""}
             </div>
@@ -3774,7 +3886,7 @@ function renderReportMcqDetail(question) {
     </div>
     <div class="explanation">
       <strong>Giải thích</strong>
-      <p>${escapeHtml(question.explanation || "Chưa có giải thích.")}</p>
+      ${renderFormattedText(question.explanation || "Chưa có giải thích.")}
     </div>
   `;
 }
@@ -3790,7 +3902,7 @@ function renderReportOpenDetail(question) {
     <div class="explanation">
       <strong>Rubric tự chấm</strong>
       <ul class="rubric-list">${(question.rubric || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
-      <p>${escapeHtml(question.explanation || "")}</p>
+      ${renderFormattedText(question.explanation || "")}
     </div>
     <div class="hero-actions">
       <button class="primary-button" data-report-grade="${question.id}" data-grade-value="pass" type="button">
@@ -3810,7 +3922,7 @@ function renderExamReviewItem(question) {
     return `
       <article class="review-item">
         <strong>Module ${question.module} · ${question.type === "code" ? "Code tay" : "Tự luận"}</strong>
-        <p>${escapeHtml(question.q)}</p>
+        <div class="review-question">${renderFormattedText(question.q)}</div>
         <div class="output-box"><h4>Bài của bạn</h4><p>${escapeHtml(state.quiz.openResponses[question.id] || "Chưa trả lời")}</p></div>
         <div class="code-block"><pre><code>${escapeHtml(question.modelAnswer || "")}</code></pre></div>
         <ul class="rubric-list">${(question.rubric || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
@@ -3824,10 +3936,10 @@ function renderExamReviewItem(question) {
   return `
     <article class="review-item">
       <strong>Module ${question.module} · Trắc nghiệm</strong>
-      <p>${escapeHtml(question.q)}</p>
-      <p>Đáp án của bạn: ${answer ? escapeHtml(question.options[answer.selected]) : "Chưa trả lời"}</p>
-      <p>Đáp án đúng: ${escapeHtml(question.options[question.answer])}</p>
-      <p>${escapeHtml(question.explanation || "")}</p>
+      <div class="review-question">${renderFormattedText(question.q)}</div>
+      <div class="answer-line"><span>Đáp án của bạn:</span><strong>${answer ? renderInlineFormattedText(question.options[answer.selected]) : "Chưa trả lời"}</strong></div>
+      <div class="answer-line"><span>Đáp án đúng:</span><strong>${renderInlineFormattedText(question.options[question.answer])}</strong></div>
+      ${renderFormattedText(question.explanation || "")}
     </article>
   `;
 }
@@ -3877,8 +3989,9 @@ function renderQuizReview() {
               .map(
                 (answer) => `
           <article class="review-item">
-            <strong>Module ${answer.question.module}: ${escapeHtml(answer.question.q)}</strong>
-            <p>${escapeHtml(answer.question.explanation)}</p>
+            <strong>Module ${answer.question.module}</strong>
+            <div class="review-question">${renderFormattedText(answer.question.q)}</div>
+            ${renderFormattedText(answer.question.explanation)}
           </article>
         `,
               )
