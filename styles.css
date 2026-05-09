@@ -696,97 +696,227 @@ body.dark .hero-panel {
   font-weight: 700;
 }
 
-.study-plan {
-  padding: 22px;
+.study-plan,
+.exam-blueprint {
+  position: relative;
+  overflow: hidden;
+  padding: 24px;
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  background: var(--surface);
+  background:
+    linear-gradient(180deg, rgba(37, 99, 235, 0.05), rgba(15, 159, 143, 0.04)),
+    var(--surface);
   box-shadow: var(--soft-shadow);
+}
+
+.timeline {
+  position: relative;
+  display: grid;
+  gap: 14px;
+  margin-top: 22px;
+}
+
+.timeline::before {
+  content: "";
+  position: absolute;
+  top: 28px;
+  bottom: 28px;
+  left: 48px;
+  width: 2px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, var(--blue), var(--teal), var(--amber));
+}
+
+.timeline-item {
+  position: relative;
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr) auto;
+  gap: 18px;
+  align-items: center;
+  min-height: 96px;
+  padding: 16px 16px 16px 0;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background:
+    linear-gradient(90deg, rgba(37, 99, 235, 0.08), rgba(255, 255, 255, 0.82) 46%, rgba(15, 159, 143, 0.06)),
+    var(--surface);
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.07);
+}
+
+body.dark .timeline-item {
+  background:
+    linear-gradient(90deg, rgba(96, 165, 250, 0.12), rgba(17, 26, 43, 0.88) 46%, rgba(45, 212, 191, 0.08)),
+    var(--surface);
+}
+
+.timeline-item::before {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  left: 40px;
+  width: 16px;
+  height: 16px;
+  transform: translateY(-50%);
+  border: 3px solid var(--surface);
+  border-radius: 999px;
+  background: var(--blue);
+  box-shadow: 0 0 0 5px rgba(37, 99, 235, 0.14);
+}
+
+.timeline-marker {
+  position: relative;
+  z-index: 3;
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+}
+
+.timeline-marker span {
+  display: grid;
+  width: 48px;
+  height: 48px;
+  place-items: center;
+  border-radius: 14px;
+  color: #fff;
+  background: linear-gradient(135deg, var(--blue), var(--teal));
+  font-size: 0.95rem;
+  font-weight: 900;
+  box-shadow: 0 12px 24px rgba(37, 99, 235, 0.22);
+}
+
+.timeline-marker strong {
+  color: var(--blue);
+  font-size: 0.9rem;
+  font-weight: 900;
+}
+
+.timeline-copy h3 {
+  margin: 0;
+  font-size: 1.02rem;
+}
+
+.timeline-copy p {
+  margin: 5px 0 0;
+  color: var(--muted);
+}
+
+.timeline-item .tiny-button {
+  min-width: 54px;
+  background: var(--surface);
 }
 
 .exam-blueprint {
   display: grid;
-  grid-template-columns: minmax(0, 0.95fr) minmax(300px, 0.65fr);
-  gap: 14px;
-  padding: 22px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--surface);
-  box-shadow: var(--soft-shadow);
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 0.36fr);
+  gap: 14px 18px;
+}
+
+.blueprint-main {
+  display: contents;
+}
+
+.blueprint-main .eyebrow,
+.blueprint-main h2,
+.blueprint-main > p {
+  grid-column: 1;
+}
+
+.blueprint-main .eyebrow {
+  margin-bottom: 0;
 }
 
 .blueprint-main h2,
 .blueprint-side h3 {
-  margin: 0 0 10px;
+  margin: 0;
 }
 
-.blueprint-main p,
+.blueprint-main > p,
 .blueprint-side p {
+  margin: 0;
   color: var(--muted);
 }
 
+.blueprint-main > p {
+  max-width: 900px;
+}
+
+.blueprint-side {
+  grid-column: 2;
+  grid-row: 1 / span 3;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 176px;
+  padding: 18px;
+  border: 1px solid rgba(37, 99, 235, 0.18);
+  border-radius: var(--radius);
+  background:
+    linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(15, 159, 143, 0.08)),
+    var(--surface-2);
+}
+
+.blueprint-side .primary-button {
+  width: max-content;
+  margin-top: 16px;
+}
+
 .blueprint-list {
+  position: relative;
   display: grid;
-  gap: 10px;
-  margin-top: 14px;
+  grid-column: 1 / -1;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 8px;
+  padding-top: 0;
+  counter-reset: blueprint-step;
+}
+
+.blueprint-list::before {
+  display: none;
 }
 
 .blueprint-item {
+  position: relative;
   display: grid;
-  grid-template-columns: 42px minmax(0, 1fr);
-  gap: 12px;
-  padding: 12px;
+  grid-template-columns: 46px minmax(0, 1fr);
+  gap: 14px;
+  min-height: 172px;
+  padding: 18px;
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  background: var(--surface-2);
+  background: var(--surface);
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.07);
+  counter-increment: blueprint-step;
+}
+
+.blueprint-item::before {
+  display: none;
+}
+
+.blueprint-item::after {
+  display: none;
 }
 
 .blueprint-item strong {
   display: inline-grid;
-  width: 34px;
-  height: 34px;
+  width: 42px;
+  height: 42px;
   place-items: center;
-  border-radius: 7px;
+  border-radius: 13px;
   color: #fff;
-  background: var(--blue);
+  background: linear-gradient(135deg, var(--blue), var(--teal));
+  box-shadow: 0 12px 24px rgba(37, 99, 235, 0.2);
 }
 
 .blueprint-item h3 {
-  margin: 0 0 4px;
-  font-size: 1rem;
+  margin: 0 0 6px;
+  font-size: 1.02rem;
 }
 
 .blueprint-item p {
   margin: 0;
-}
-
-.timeline {
-  display: grid;
-  gap: 10px;
-}
-
-.timeline-item {
-  display: grid;
-  grid-template-columns: 72px minmax(0, 1fr) auto;
-  gap: 14px;
-  align-items: center;
-  padding: 12px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--surface-2);
-}
-
-.timeline-item strong {
-  color: var(--blue);
-}
-
-.timeline-item h3 {
-  margin: 0;
-  font-size: 1rem;
-}
-
-.timeline-item p {
-  margin: 4px 0 0;
   color: var(--muted);
 }
 
@@ -2166,6 +2296,35 @@ body.dark .exam-right {
     grid-column: 1 / -1;
   }
 
+  .blueprint-list {
+    grid-template-columns: 1fr;
+    padding-top: 0;
+    padding-left: 0;
+  }
+
+  .blueprint-list::before {
+    top: 12px;
+    right: auto;
+    bottom: 12px;
+    left: 16px;
+    width: 2px;
+    height: auto;
+    background: linear-gradient(180deg, var(--blue), var(--teal), var(--amber));
+  }
+
+  .blueprint-item {
+    min-height: 0;
+  }
+
+  .blueprint-item::before {
+    top: 24px;
+    left: -34px;
+  }
+
+  .blueprint-item::after {
+    display: none;
+  }
+
   .content-layout {
     grid-template-columns: 240px minmax(0, 1fr);
   }
@@ -2249,6 +2408,19 @@ body.dark .exam-right {
     grid-template-columns: 1fr;
   }
 
+  .blueprint-side,
+  .blueprint-main .eyebrow,
+  .blueprint-main h2,
+  .blueprint-main > p {
+    grid-column: 1;
+  }
+
+  .blueprint-side {
+    grid-row: auto;
+    min-height: 0;
+    justify-content: flex-start;
+  }
+
   .content-layout {
     grid-template-columns: 1fr;
   }
@@ -2312,7 +2484,54 @@ body.dark .exam-right {
   }
 
   .timeline-item {
-    grid-template-columns: 1fr;
+    grid-template-columns: 64px minmax(0, 1fr);
+    gap: 12px;
+    padding: 14px 14px 14px 0;
+  }
+
+  .timeline::before {
+    left: 32px;
+  }
+
+  .timeline-item::before {
+    left: 24px;
+  }
+
+  .timeline-marker span {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+  }
+
+  .timeline-marker strong {
+    font-size: 0.78rem;
+  }
+
+  .timeline-item .tiny-button {
+    grid-column: 2;
+    width: max-content;
+  }
+
+  .blueprint-list {
+    padding-left: 0;
+  }
+
+  .blueprint-list::before {
+    left: 13px;
+  }
+
+  .blueprint-item {
+    grid-template-columns: 42px minmax(0, 1fr);
+    gap: 12px;
+    padding: 14px;
+  }
+
+  .blueprint-item::before {
+    left: -29px;
+  }
+
+  .blueprint-side .primary-button {
+    width: 100%;
   }
 
   .lesson-card summary {

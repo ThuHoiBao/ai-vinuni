@@ -2839,10 +2839,13 @@ function renderModuleMap() {
 function renderStudyPlan() {
   $("#studyPlanList").innerHTML = studyPlan
     .map(
-      (item) => `
+      (item, index) => `
       <article class="timeline-item">
-        <strong>${escapeHtml(item.day)}</strong>
-        <div>
+        <div class="timeline-marker">
+          <span>${String(index + 1).padStart(2, "0")}</span>
+          <strong>${escapeHtml(item.day)}</strong>
+        </div>
+        <div class="timeline-copy">
           <h3>${escapeHtml(item.title)}</h3>
           <p>${escapeHtml(item.detail)}</p>
         </div>
